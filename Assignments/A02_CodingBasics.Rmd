@@ -114,7 +114,7 @@ Is.Score.Passing.2<-function(x)
   if(x>=50) {
     print(TRUE)
   } else{print(FALSE)}
-#Function using `if` and `else` statements, only returns 1 value 
+#Function using `if` and `else` statements, only returns 1 value  
     
 
 ```
