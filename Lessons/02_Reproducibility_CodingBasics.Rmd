@@ -1,3 +1,5 @@
+
+
 ---
 title: "2: Reproducibility and Coding Basics"
 author: "Environmental Data Analytics | John Fay and Luana Lima | Developed by Kateri Salk"
@@ -92,7 +94,7 @@ median(5, 4, 6, 4, 6)
 # Conditional statements
 4 > 5
 4 < 5
-4 != 5
+4 != 5 #4 is different from 5 
 4 == 5
 
 ```
@@ -226,7 +228,7 @@ meal2 <- recipe4(2); meal2
 meal3 <- recipe5(3); meal3
 
 recipe6 <- function(x){
-  ifelse(x<3, x*2, x/2) #log_exp, if TRUE, if FALSE
+  ifelse(x<3, x*2, x/2) #log_exp, if TRUE, if FALSE, uses another function within a function
   
 }
 
