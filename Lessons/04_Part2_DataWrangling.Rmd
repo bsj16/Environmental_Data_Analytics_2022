@@ -101,7 +101,7 @@ write.csv(NTL.nutrient.data.PeterPaul.gathered, row.names = FALSE,
 #NTL.nutrient.data.PeterPaul.spread <- spread(NTL.nutrient.data.PeterPaul.gathered, nutrient, concentration)
 
 # Spread nutrient data into separate columns using pivot_wider
-NTL.nutrient.data.PeterPaul.spread2 <- pivot_wider(NTL.nutrient.data.PeterPaul.gathered, names_from = nutrient, values_from = concentration)
+NTL.nutrient.data.PeterPaul.spread2 <- pivot_wider(NTL.nutrient.data.PeterPaul.gathered, names_from = nutrient, values_from = concentration) # spread data has less columns, may be bc we remove the NAs
 
 # Split components of cells into multiple columns
 # Opposite of 'separate' is 'unite'
