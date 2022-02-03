@@ -34,10 +34,10 @@ vector1 <- c(1,2,5.3,6,-2,4) # numeric vector
 vector1
 vector2 <- c("one","two","three") # character vector
 vector2
-vector3 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) #logical vector
+vector3 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) #logical vector, must be capital 
 vector3
 
-vector1[3] # 
+vector1[3] #return 1 value in vector
 
 # Matrices ----
 matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # 
@@ -48,11 +48,11 @@ matrix3 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE, # return after comma c
                   dimnames = list(c("uno", "dos", "tres", "cuatro", "cinco"), 
                                   c("un", "deux", "trois", "cat"))) #
 
-matrix1[4, ] #
-matrix1[ , 3] #
-matrix1[c(12, 14)] #
-matrix1[c(12:14)] #
-matrix1[2:4, 1:3] #
+matrix1[4, ] #row 4, blank means all columns 4th row of matrix 1
+matrix1[ , 3] #returns values in column 3
+matrix1[c(12, 14)] #returns 12 and 14
+matrix1[c(12:14)] #returns 12-13
+matrix1[2:4, 1:3] #rows 2-4, columns 1-3
 
 cells <- c(1, 26, 24, 68)
 rnames <- c("R1", "R2")
@@ -66,25 +66,25 @@ list1 <- list(name = "Maria", mynumbers = vector1, mymatrix = matrix1, age = 5.3
 list1[[2]]
 
 # Data Frames ----
-d <- c(1, 2, 3, 4) # What type of vector?
-e <- c("red", "white", "red", NA) # What type of vector?
-f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector?
-dataframe1 <- data.frame(d,e,f) #
+d <- c(1, 2, 3, 4) # number
+e <- c("red", "white", "red", NA) # character
+f <- c(TRUE, TRUE, TRUE, FALSE) #logical
+dataframe1 <- data.frame(d,e,f) #joins all the vectors into a dataframe
 names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # 
 
-dataframe1[1:2,] # 
-dataframe1[c("ID","Passed")] # 
+dataframe1[1:2,] #rows 1-2 and all columns
+dataframe1[c("ID","Passed")] #pulls columns with certain title 
 dataframe1$ID
 
 ```
 Question: How do the different types of data appear in the Environment tab?
 
-> Answer: 
+> Answer: Vectors have a string of numbers, data frames have observations of variables 
 
 Question: In the R chunk below, write "dataframe1$". Press `tab` after you type the dollar sign. What happens?
 
-> Answer: 
 
+> Answer: You see options for each column 
 
 
 
@@ -93,24 +93,40 @@ Question: In the R chunk below, write "dataframe1$". Press `tab` after you type 
 Find a ten-day forecast of temperatures (Fahrenheit) for Durham, North Carolina. Create two vectors, one representing the high temperature on each of the ten days and one representing the low.
 
 ```{r}
+High.Durham.F <- c(49,58,39,41,44,37,41,51,52,52)
+Low.Durham.F <- c(30,30,18,26,26,18,26,26,28,39)
+
 
 ```
 
 Now, create two additional vectors that include the ten-day forecast for the high and low temperatures in Celsius. Use a function to create the two new vectors from your existing ones in Fahrenheit.
 
 ```{r}
+Celsius.Conv<-function(x){x-32 * 5/9}
+
+
+ Celsius.Conv(High.Durham.F)
+ Celsius.Conv(Low.Durham.F)
+ 
+ 
+Durham.High.C <-Celsius.Conv(High.Durham.F)
+Durham.Low.C <-Celsius.Conv(Low.Durham.F)
 
 ```
 
 Combine your four vectors into a data frame and add informative column names.
 
 ```{r}
+Durham.Temps <- data.frame("HighF"=High.Durham.F, "LowF"=Low.Durham.F, "HighC"=Durham.High.C, "LowC"=Durham.Low.C)
+Durham.Temps
 
 ```
 
 Use the common functions `summary` and `sd` to obtain basic data summaries of the ten-day forecast. How would you call these functions differently for the entire data frame vs. a single column? Attempt to demonstrate both options below.
 
 ```{r}
+summary(Durham.Temps)
+sd(Durham.Temps$HighF)
 
 ```
 
@@ -133,9 +149,9 @@ Remember formatting of dates in R:
 # An example is provided to get you started.
 # (code must be uncommented)
 today <- Sys.Date()
-format(today, format = "%B")
-#format(today, format = "")
-#format(today, format = "")
+format(today, format = "%B") #unabbreviated month
+format(today, format = "%y") #abbreviated year
+format(today, format = "%m-%d-%Y") #01 30 2022
 #format(today, format = "")
 
 ```
