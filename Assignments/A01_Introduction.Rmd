@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Introduction"
-author: "Student Name"
+author: "Blair Johnson"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -22,15 +22,15 @@ The completed exercise is due on <>.
 
 1. What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
-> Answer: 
+> Answer: I have had some experience in data analytics and R through taking ENVIRON 710 in Fall of 2020. I have some experience using R to solve statistics problems, handle large datasets, and use statistical models. I also had some practice with R in my summer internship where I analyzed datasets pertaining to Clean Water State Revolving Fund projects. I have never used Git but look forward to learning how to use the software. 
 
 2. Are there any components of the course about which you feel confident?
 
-> Answer: 
+> Answer: I feel pretty confident about data visualizations and plots through ggplot. I am also fairly confident with data wrangling and importing. 
 
 3. Are there any components of the course about which you feel apprehensive?
 
-> Answer: 
+> Answer: Not at the moment, but I do want to learn how I can troubleshoot R issues more effectively. I have also had zero GitHub experience so I feel that learning to incorporate GitHub and R will take some practice. 
 
 
 ## 2) GitHub
@@ -38,5 +38,5 @@ The completed exercise is due on <>.
 Provide a link below to your forked course repository in GitHub. Make sure you have pulled all recent changes from the course repository  and that you have updated your course README file. 
 
 > Answer: 
-
+https://github.com/bsj16/Environmental_Data_Analytics_2022
 
