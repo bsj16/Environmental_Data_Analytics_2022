@@ -79,24 +79,25 @@ Here are some commonly used aesthetic types that can be manipulated in ggplot:
 ```{r, fig.height = 3, fig.width = 4, warning = FALSE}
 # Scatterplot
 ggplot(EPAair, aes(x = Date, y = Ozone)) + 
-  geom_point()
+  geom_point() #generates points 
 
 O3plot <- ggplot(EPAair) +
   geom_point(aes(x = Date, y = Ozone))
-print(O3plot)
+print(O3plot) #store plot in an object 
 
 # Fix this code
 O3plot2 <- ggplot(EPAair) +
-  #geom_point(aes(x = Date, y = Ozone, color = "blue"))
-  geom_point(aes(x = Date, y = Ozone), color = "blue")
+  #geom_point(aes(x = Date, y = Ozone, color = "blue")) color is not blue
+  geom_point(aes(x=Date, y = Ozone), color="blue")
 print(O3plot2)
 
 # Add additional variables
 # How could you automatically assign a marker color to a variable? 
 PMplot <- 
-  ggplot(EPAair, aes(x = Month, y = PM2.5, shape = as.factor(Year), color = Site.Name)) +
+  ggplot(EPAair, aes(x = Month, y = PM2.5, shape = as.factor(Year), color = 
+  Site.Name)) +
   geom_point()
-print(PMplot)
+print(PMplot) #color coded by site name, different shapes for each year 
 
 # Separate plot with facets
 PMplot.faceted <-
@@ -111,14 +112,14 @@ PMplot.faceted2 <-
                   Site.Name == "Bryson City"), 
          aes(x = Month, y = PM2.5)) + 
   geom_point() +
-  facet_grid(Site.Name ~ Year) 
+  facet_grid(Site.Name ~ Year) #site name by year 
 print(PMplot.faceted2)
 
 # Plot true time series with geom_line
 PMplot.line <- 
   ggplot(subset(EPAair, Site.Name == "Leggett"), 
          aes(x = Date, y = PM2.5)) +
-  geom_line()
+  geom_line() #all observations connected by line
 print(PMplot.line)
 
 
@@ -152,8 +153,8 @@ print(tempvsdepth)
 
 NvsP <-
   ggplot(PeterPaul.chem.nutrients, aes(x = tp_ug, y = tn_ug, color = depth)) +
-  geom_point() +
-  geom_smooth(method = lm) +
+  geom_point()  + 
+  geom_smooth(method = lm) + #adds a trendline
   geom_abline(aes(slope = 16, intercept = 0))
 print(NvsP)
 
@@ -168,8 +169,8 @@ What might be more effective ways to display the information? Navigate to the bo
 # Box and whiskers plot
 Nutrientplot3 <-
   ggplot(PeterPaul.chem.nutrients.gathered, aes(x = lakename, y = concentration)) +
-  geom_boxplot(aes(color = nutrient)) # Why didn't we use "fill"?
-print(Nutrientplot3)
+  geom_boxplot(aes(color = nutrient)) 
+print(Nutrientplot3) #why does plot have <<<Head? 
 
 # Dot plot
 Nutrientplot4 <-
