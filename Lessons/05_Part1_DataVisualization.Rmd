@@ -65,6 +65,8 @@ Here are some commonly used layers for plotting in ggplot:
 * geom_abline (plus geom_hline and geom_vline)
 * geom_text
 
+Geoms add an additional layer to the plot 
+
 ### Aesthetics
 Here are some commonly used aesthetic types that can be manipulated in ggplot: 
 

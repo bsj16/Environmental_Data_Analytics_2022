@@ -151,6 +151,8 @@ nationalparkcolors (package)
 
 * https://github.com/katiejolly/nationalparkcolors
 
+Yellow and red should be for warm and hot temperatures 
+
 ```{r, warning = FALSE}
 # install.packages("viridis")
 # install.packages("RColorBrewer")
@@ -240,3 +242,4 @@ ggplot(Neonics) +
 
 
 ```
+Fill colors boxplot with same color, fill also colors contour of line 
