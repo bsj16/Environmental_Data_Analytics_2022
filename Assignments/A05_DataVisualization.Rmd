@@ -101,26 +101,28 @@ plot.TP <- ggplot(Peter.Paul.Lake, aes(x=month, y=tp_ug)) +
   labs(color = "Lake Name")
 print(plot.TP)
 
-plot.TN <- ggplot(Peter.Paul.Lake, aes(x=month, y=tn_ug, color=lakename)) +geom_boxplot()  +
+plot.TN <- ggplot(Peter.Paul.Lake, aes(x=month, y=tn_ug, color=lakename)) +
+  geom_boxplot()  +
   xlab("Month") +
   ylab("Total Nitrate") +
   labs(color = "Lake Name")
 print(plot.TN)
 
 #Plotting each variable without the legend
-plot.temp.axis <- plot.temp + theme(legend.position = "none")
-plot.TP.axis <- plot.TP + theme(legend.position = "none")
-plot.TN.axis <- plot.TN +theme(legend.position = "none")
+temp.no.legend <- plot.temp + theme(legend.position = "none")
+TP.no.legend <- plot.TP + theme(legend.position = "none")
+TN.no.legend <- plot.TN +theme(legend.position = "none")
 
-#plot grid without legend
-plot.no.legend <- plot_grid(plot.temp.axis, plot.TP.axis, plot.TN.axis, ncol=3, align ='v', axis ='tb', rel_heights = c(1,1,1))
+#Combined plot without legend
+plot.no.legend <- plot_grid(temp.no.legend, TP.no.legend, TN.no.legend,
+                            ncol=3, align ='v', axis ='tb', rel_heights = c(1,1,1))
 
 #Pulling legend from one of the plots
 legend <-get_legend(plot.temp)
 
 #Combining plots and 1 legend
-plot.legend <- plot_grid(plot.no.legend, legend, nrow=2, rel_heights= c(3,0.5))
-plot.legend
+plot.legend.combined <- plot_grid(plot.no.legend, legend, nrow=2, rel_heights= c(3,0.5))
+plot.legend.combined
 
 
 
