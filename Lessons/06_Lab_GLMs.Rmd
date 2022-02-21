@@ -66,7 +66,7 @@ Are Ozone levels below the threshold for "good" AQI index (0-50)?
 
 > Exercise 1: State the hypotheses for testing mean of AQI index.
 
-> Answer: 
+> Answer: Ozone levels are greater than 50
 
 
 ```{r}
@@ -152,6 +152,26 @@ Create three plots, each with appropriately formatted axes and legends. Choose a
 ```{r}
 #Exercise 2:
 
+ozone.density <- ggplot(EPAair, aes(x=Ozone, fill=as.factor(Year))) +
+  geom_density(alpha=0.4) + #alpha is for transparency
+  scale_fill_manual(values=c("green", "darkblue")) +
+  labs(x="Ozone AQI value", y="Density", fill="") #fill-"" signals that we don't have a label for the legend 
+print(ozone.density)
+
+ozone.boxplot <- ggplot(EPAair, aes(x=as.factor(Year), y=Ozone)) +
+  geom_boxplot() +
+  stat_summary(geom = "text", fun.y = max, 
+               vjust = -1, size = 4,
+               label = c("b", "a")) + #vjust is vertical justification which places the label above the plot 
+  labs(x="", y="Ozone AQI value")
+print(ozone.boxplot)
+
+ozone.violin <- ggplot(EPAair, aes(x=as.factor(Year), y=Ozone)) +
+  geom_violin() + stat_summary(geom = "text", fun.y=max, 
+                               vjust= -1, size =4,
+                               label = c("b", "a")) +
+  labs(x="", y="Ozone AQI Value")
+print(ozone.violin)
 
 ```
 
@@ -165,11 +185,14 @@ For the NTL-LTER dataset, can we predict PM2.5 from Ozone?
 
 #Exercise 3: Run a linear regression PM2.5 by Ozone. Find the p-value and R-squared value. 
 
+lm.pm.ozone <- lm(data=EPAair, PM2.5 ~ Ozone)
+summary(lm.pm.ozone)
 
 
 #Exercise 4: Build a scatterplot. Add a line and standard error for the linear regression. 
-
-
+plot.pm.ozone <- ggplot(EPAair, aes(y=PM2.5, x=Ozone)) +
+  geom_point() +geom_smooth(method=lm)
+print(plot.pm.ozone)
 
 ```
 
