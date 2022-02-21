@@ -5,7 +5,7 @@ date: "Spring 2022"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
-  chunk_output_type: console #output will go to the console 
+  chunk_output_type: console #output will go to the console
 ---
 
 ## Objectives
@@ -57,6 +57,13 @@ A linear regression is comprised of a continuous response variable, plus a combi
 $$ y = \alpha + \beta*x + \epsilon $$
 
 The goal for the linear regression is to find a **line of best fit**, which is the line drawn through the bivariate space that minimizes the total distance of points from the line. This is also called a "least squares" regression. The remainder of the variance not explained by the model is called the **residual error.** 
+
+*Residual error should follow a normal distribution so it is symmetric* 
+*R-squared: amount of variable, R-squared shows how well the x variable fits to the y variable. X variable shows X% of variability in y variable* 
+*P-value: significance of the regression. Shows p-value in response to each coefficient. Want a small p-value (<0.05)*
+*Increase in R-squared can be a result of adding another variable to the regression* 
+
+*Interaction variable-create a correlation between two variables* 
 
 The linear regression will test the null hypotheses that
 
@@ -190,6 +197,8 @@ However, it is possible to over-parameterize a linear model. Adding additional e
 
 Let's say we want to know which explanatory variables will allow us to best predict total phosphorus concentrations. Potential explanatory variables from the dataset could include depth, dissolved oxygen, temperature, PAR, total N concentration, and phosphate concentration.
 
+*AIC helps us figure out what variables to have for model selection --> what regression is leading to the best fit?* 
+
 ```{r}
 Paul.naomit <- PeterPaul.chem.nutrients %>%
   filter(lakename == "Paul Lake") %>%
@@ -199,6 +208,10 @@ TPAIC <- lm(data = Paul.naomit, tp_ug ~ depth + dissolvedOxygen +
               temperature_C + tn_ug + po4)
 
 #Choose a model by AIC in a Stepwise Algorithm
+#example- when removing po4, AIC is 352, AIC is 352.76 when removing depth. When AIC increases, we should keep the variable in the linear regression
+
+#repeat AIC process until first variable is <none>, want to increase AIC of the model 
+#Don't want variables with high correlation in model because we may be overfitting 
 step(TPAIC)
 TPmodel <- lm(data = Paul.naomit, tp_ug ~ dissolvedOxygen + temperature_C + tn_ug) #we look at the impacts of removing particular variables 
 summary(TPmodel)
