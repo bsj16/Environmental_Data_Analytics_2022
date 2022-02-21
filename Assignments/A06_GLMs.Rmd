@@ -1,6 +1,6 @@
 ---
 title: "Assignment 6: GLMs (Linear Regressios, ANOVA, & t-tests)"
-author: "Student Name"
+author: "Blair Johnson"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -27,9 +27,22 @@ The completed exercise is due on Monday, February 28 at 7:00 pm.
 
 ```{r setup}
 #1
+getwd()
+library(tidyverse)
+library(agricolae)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+NTL.lake.data <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
 
+NTL.lake.data$sampledate <-as.Date(NTL.lake.data$sampledate, format="%m/%d/%y")
 
 #2
+
+mytheme <- theme_bw(base_size=12) +
+  theme(axis.text = element_text(color="black"),
+        legend.position = "bottom")
+theme_set(mytheme)
 
 
 ```
@@ -39,8 +52,8 @@ Our first research question is: Does mean lake temperature recorded during July 
 
 3. State the null and alternative hypotheses for this question:
 > Answer:
-H0: 
-Ha: 
+H0: Mean lake temperature recorded during July does not change with depth across all lakes
+Ha: Mean lake temperature recorded during July changes with depth across all lakes
 
 
 4.  Wrangle your NTL-LTER dataset with a pipe function so that the records meet the following criteria: 
@@ -53,16 +66,27 @@ Ha:
 ```{r scatterplot}
 #4
 
+NTL.data.wrangled <- 
+  NTL.lake.data %>%
+   select(lakename, year4, daynum, depth, temperature_C, sampledate) %>%
+   filter(!is.na(temperature_C)) %>%
+  mutate(month=month(sampledate)) %>%
+  filter(month==7) %>%
+  select(lakename, year4, daynum, depth, temperature_C)
 
+  
 #5
 
+NTL.data.scatterplot <-
+  ggplot(NTL.data.wrangled, aes(x=depth, y=temperature_C)) + geom_point() + geom_smooth(method=lm) +ylim(0,35) +xlab("Depth") +ylab("Temperature in Celsius")
+print(NTL.data.scatterplot)
 
 ```
 
 
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
-> Answer: 
+> Answer: This figure shows that temperature decreases as the depth increases. 
 
 
 7. Perform a linear regression to test the relationship and display the results
@@ -70,13 +94,15 @@ Ha:
 ```{r linear.regression}
 #7
 
+lm.NTL.data <- lm(data=NTL.data.wrangled, temperature_C ~ depth)
+summary(lm.NTL.data)
 
 ```
 
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer:
+> Answer: This model shows that there is a negative correlation between lake temperature and temperature depth. For every 1m change in depth, the temperature decreases by -1.94621. With an R-squared of 0.7387, this shows that 73.87% 
 
 
 ---
@@ -92,6 +118,8 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 ```{r temperature.model}
 #9
 
+NTL.AIC <- lm (data=NTL.data.wrangled, temperature_C ~ year4 + daynum + depth)
+step(NTL.AIC)
 
 
 #10
@@ -142,10 +170,8 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 >Answer:
 
- 
+ No? 
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
->Answer: 
-
-
+>Answer: The t-test would allow us to compare means between the two lakes 

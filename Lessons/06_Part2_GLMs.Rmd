@@ -65,6 +65,8 @@ shapiro.test(Litter.Totals$dryMass[Litter.Totals$plotID == "NIWO_063"])
 shapiro.test(Litter.Totals$dryMass[Litter.Totals$plotID == "NIWO_064"])
 shapiro.test(Litter.Totals$dryMass[Litter.Totals$plotID == "NIWO_067"])
 
+#Shapiro test allows us to compare means among different observations. Group letters are randomly assigned 
+
 #results: reject null in all except two: NIWO_057 and NIWO_046
 qqnorm(Litter.Totals$dryMass); qqline(Litter.Totals$dryMass)
 
