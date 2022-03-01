@@ -92,7 +92,7 @@ summary(Litter.Totals.anova2)
 
 
 
-# Post-hoc test
+# Post-hoc test explores differences between multiple group means
 # TukeyHSD() computes Tukey Honest Significant Differences
 TukeyHSD(Litter.Totals.anova)
 

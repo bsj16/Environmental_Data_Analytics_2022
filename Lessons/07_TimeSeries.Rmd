@@ -215,6 +215,7 @@ Let's refer to our wind speed data. We already performed interpolation, but we s
 
 Note that wind speed has a seasonal cycle. We might be interested in knowing how (if) speed has changed over the course of measurement while incorporating the seasonal component. In this case, we will use a Seasonal Mann-Kendall test to figure out whether a monotonic trend exists.
 
+Difference between stochastic trend and deterministic trend-deterministic trend is constant over time, stochastic keeps the same direction but changes slowly over time. 
 
 ```{r}
 
