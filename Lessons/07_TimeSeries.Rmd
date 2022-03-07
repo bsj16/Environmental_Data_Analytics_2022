@@ -13,6 +13,22 @@ editor_options:
 2. Explore the components of times series: trend, seasonal, random
 3. Learn how to perform stationarity test
 
+Time series analysis can help for forecasting and address temporal trends 
+
+Stationary Data- time series variable exhibiting no significant upward or downward trend over time
+Nonstationary data- time series variable exhibiting signicant upward or downward trend over time
+Seasonal data- time series variable exhibiting repeating patterns at regular intervals over time
+
+Autocovariance and autocorrelation function (ACF) give info about the dependence structure of a time series 
+
+Pt, t-h = Corr(Yt, Yt-h) measures linear dependency among the process variables Partial Autocorrelation Function (PACF)
+Always build ACF and PACF before fitting a model to a stochastic process
+ACFs help us identify seasonality in a dataset
+
+We estimate the trend so we can remove it from the dataset
+
+Generally assume linear trend to simplify analysis
+
 ## Set up
 
 Today we will work with two datasets. The USGS dataset on discharge at the Eno River and a new dataset we haven't explored yet on wind speed. The data file is available at "./Data/Raw/Wind_Speed_PortArthurTX.csv". It contains average wind speed in monthly time steps (elevation = 5 meters). The data is available from NOAA National Centers for Environmental Information (NCEI) [here][https://www.ncdc.noaa.gov/cdo-web/datasets#GSOM].
@@ -29,6 +45,8 @@ library(zoo)
 library(Kendall)
 #install.packages("tseries")
 library(tseries)
+library(ggplot2)
+
 
 # Set theme
 mytheme <- theme_classic(base_size = 14) +
@@ -115,7 +133,8 @@ We first need to turn the discharge data into a time series object in R. This is
 Note: time series objects must be equispaced. In our case, we have daily data with no NAs in the data frame, so we don't need to worry about this. We will cover how to address data that are not equispaced later in the lesson.
 
 ```{r}
-EnoDischarge.late_ts <- ts(EnoDischarge.late$discharge.mean, start = c(1985,1), frequency = 365)
+EnoDischarge.late_ts <- ts(EnoDischarge.late$discharge.mean, 
+                           start = c(1985,1), frequency = 365) #increase by 1 day when viewing new observation
 ```
 
 The `stl` function decomposes the time series object into its component parts. We must specify that the window for seasonal extraction is either "periodic" or a specific number of at least 7. The decomposition proceeds through a loess (locally estimated scatterplot smoothing) function.
@@ -184,10 +203,12 @@ summary(wind_data$AWND)
 # In real applications you will simply replace NAs
 wind_data_clean <- 
   wind_data %>% 
-  mutate( AWND.clean = zoo::na.approx(AWND) )
+  mutate( AWND.clean = zoo::na.approx(AWND) ) #uses an interpolation 
 
 summary(wind_data_clean$AWND.clean)
 #Note the NA is gone
+
+#Do not use na.omit or drop.na for NAs in the middle of the dataset 
 
 ggplot(wind_data_clean ) +
   geom_line(aes(x = DATE, y = AWND.clean), color = "red") +
@@ -241,7 +262,7 @@ summary(wind_data_trend1)
 wind_data_trend2 <- trend::smk.test(wind_data_ts)
 # Inspect results
 wind_data_trend2
-summary(wind_data_trend2)
+summary(wind_data_trend2) #stronger tendency for decrease for some seasons 
 
 #Visualization
 wind_data_plot <-
@@ -256,7 +277,7 @@ print(wind_data_plot)
 
 What would we conclude based on these findings? 
 
-> Answer:
+> Answer: Decreasing with time 
 
 
 ## Forecasting with Autoregressive and Moving Average Models (ARMA)

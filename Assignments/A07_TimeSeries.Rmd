@@ -1,6 +1,6 @@
 ---
 title: "Assignment 7: Time Series Analysis"
-author: "Student Name"
+author: "Blair Johnson"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -29,6 +29,17 @@ The completed exercise is due on Monday, March 14 at 7:00 pm.
 
 ```{r}
 #1
+getwd()
+library(tidyverse)
+library(lubridate)
+library(zoo)
+library(trend)
+library(ggplot2)
+
+mytheme <- theme_bw(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "right")
+theme_set(mytheme)
 
 ```
 
@@ -38,6 +49,18 @@ The completed exercise is due on Monday, March 14 at 7:00 pm.
 ```{r, message = FALSE}
 #2
 
+ozone.2010 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2010_raw.csv")
+ozone.2011 <-read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2011_raw.csv")
+ozone.2012 <-read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2012_raw.csv")
+ozone.2013 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2013_raw.csv")
+ozone.2014 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2014_raw.csv")
+ozone.2015 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2015_raw.csv")
+ozone.2016 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2016_raw.csv")
+ozone.2017 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2017_raw.csv")
+ozone.2018 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2018_raw.csv")
+ozone.2019 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2019_raw.csv")
+
+GaringerOzone <-rbind(ozone.2010, ozone.2011, ozone.2012, ozone.2013, ozone.2014, ozone.2015, ozone.2016, ozone.2017, ozone.2018, ozone.2019)
 
 ```
 
@@ -53,12 +76,20 @@ The completed exercise is due on Monday, March 14 at 7:00 pm.
 
 ```{r}
 # 3
+GaringerOzone$Date <- mdy(GaringerOzone$Date)
 
 # 4
+GaringerOzone.filtered <- GaringerOzone %>%
+  select(Date, Daily.Max.8.hour.Ozone.Concentration, DAILY_AQI_VALUE)
 
 # 5
+Days <- as.data.frame(seq(as.Date("2010-01-01"), as.Date("2019-12-31"), by = "days")) 
+names(Days) <- c("Date")
 
 # 6
+
+GaringerOzone <- left_join(Days, GaringerOzone.filtered)
+names(GaringerOzone) <- c("Date","Ozone", "AQI")
 
 ```
 
@@ -68,10 +99,13 @@ The completed exercise is due on Monday, March 14 at 7:00 pm.
 
 ```{r}
 #7
+Ozone.ts <- ts(GaringerOzone$Ozone, start = c(2010,1),
+            frequency= 365) 
+plot(Ozone.ts)
 
 ```
 
->Answer: 
+>Answer: Based on this time series plot, the ozone concentration is higher in 2010-2012, then decreases in following years. This plot also shows that the ozone concentrations increase and then decrease each year.
 
 ## Time Series Analysis
 
@@ -81,6 +115,10 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 #8
+summary(GaringerOzone)
+Garinger.data.clean <- 
+  GaringerOzone %>%
+  mutate(Ozone.clean = zoo::na.approx(Ozone))
 
 ```
 
@@ -91,6 +129,11 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 #9
+
+GaringerOzone.monthly <- Garinger.data.clean %>%
+  mutate(Month =month(Date),
+         Year=year(Date),
+         )
 
 ```
 
