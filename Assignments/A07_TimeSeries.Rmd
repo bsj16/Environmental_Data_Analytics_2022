@@ -99,13 +99,17 @@ names(GaringerOzone) <- c("Date","Ozone", "AQI")
 
 ```{r}
 #7
-Ozone.ts <- ts(GaringerOzone$Ozone, start = c(2010,1),
-            frequency= 365) 
-plot(Ozone.ts)
+GaringerOzone.plot <- ggplot(GaringerOzone, aes(y=Ozone, x=Date)) + 
+  geom_line() +
+  geom_smooth(method = "lm") + 
+ scale_x_date(limits = as.Date(c("2010-01-01", "2019-12-31")), 
+    date_breaks = "1 year", date_labels = "%Y") + 
+  labs(y ="Ozone Concentration (ppm)", x= "Year") 
+print(GaringerOzone.plot)
 
 ```
 
->Answer: Based on this time series plot, the ozone concentration is higher in 2010-2012, then decreases in following years. This plot also shows that the ozone concentrations increase and then decrease each year.
+>Answer: Based on this time series plot, the ozone concentrations are higher in 2010-2012 than in the following years up until 2010, then decreases following that year. This plot also shows that the ozone concentrations increase and decrease based on the seasons because higher ozone concentrations are more prevalent in the middle of each year and are at their lowest at the end of each year. Based on the trendline, there is a slight negative trend in the data.
 
 ## Time Series Analysis
 
@@ -122,8 +126,7 @@ Garinger.data.clean <-
 
 ```
 
-> Answer:  
-
+> Answer: The linear interpolation allows us to fill in missing data using the daily data that falls before and after the missing period. Since the spline interpolation relies on a quadratic formula, using that interpolation method could yield daily data that does not accurately represent the dataset. We do not use the piecewise constant because it is not ideal for a continuous dataset(like the one in this exercise) because it draws from the nearest neighbor and does not fill in gaps as neatly.
 
 9. Create a new data frame called `GaringerOzone.monthly` that contains aggregated data: mean ozone concentrations for each month. In your pipe, you will need to first add columns for year and month to form the groupings. In a separate line of code, create a new Date column with each month-year combination being set as the first day of the month (this is for graphing purposes only)
 
@@ -132,8 +135,14 @@ Garinger.data.clean <-
 
 GaringerOzone.monthly <- Garinger.data.clean %>%
   mutate(Month =month(Date),
-         Year=year(Date),
-         )
+         Year=year(Date)) %>%
+         mutate(Month_Year=my(paste0(Month, "-", Year))) %>%
+         group_by(Month_Year) %>% 
+  summarise(MeanOzone = mean(Ozone.clean))
+
+
+head(GaringerOzone.monthly, 6)
+
 
 ```
 
@@ -142,6 +151,9 @@ GaringerOzone.monthly <- Garinger.data.clean %>%
 
 ```{r}
 #10
+GaringerOzone.daily.ts <- ts(Garinger.data.clean$Ozone.clean, start= c(2010, 1), frequency = 365)
+
+GaringerOzone.monthly.ts <- ts(GaringerOzone.monthly$MeanOzone, start = c(2010,1), frequency = 12)
 
 
 ```
@@ -152,6 +164,11 @@ GaringerOzone.monthly <- Garinger.data.clean %>%
 ```{r}
 #11
 
+Garinger.daily.decomposed <- stl(GaringerOzone.daily.ts, s.window = "periodic")
+plot(Garinger.daily.decomposed)
+
+Garinger.monthly.decomposed <-stl(GaringerOzone.monthly.ts, s.window = "periodic")
+plot(Garinger.monthly.decomposed)
 
 ```
 
@@ -161,24 +178,32 @@ GaringerOzone.monthly <- Garinger.data.clean %>%
 ```{r}
 #12
 
+GaringerOzone.monthly.trend <-Kendall::SeasonalMannKendall(GaringerOzone.monthly.ts)
 
+GaringerOzone.monthly.trend
+summary(GaringerOzone.monthly.trend)
+
+
+GaringerOzone.monthly.trend.2<-trend::smk.test(GaringerOzone.monthly.ts)
+summary(GaringerOzone.monthly.trend.2) 
 
 ```
 
-> Answer:  
+> Answer: The seasonal Mann-Kendall is most appropriate because it is appropriate for data that shows seasonal trends. Based off of our analysis, we see that the ozone levels in the dataset change seasonally; therefore, the seasonal Mann-Kendall accounts for those changes. 
 
 13. Create a plot depicting mean monthly ozone concentrations over time, with both a geom_point and a geom_line layer. Edit your axis labels accordingly.
 
 ```{r}
 # 13
-
-
+GaringerOzone.Monthly.Plot <- ggplot(GaringerOzone.monthly, aes(x=Month_Year, y=MeanOzone)) + geom_point() + geom_line() +geom_smooth(method = lm) +labs(y ="Mean Monthly Ozone", title = "Monthly Mean Ozone over Time", x = "Year") + scale_x_date(limits = as.Date(c("2010-01-01", "2019-12-31")), 
+    date_breaks = "1 year", date_labels = "%Y")
+print(GaringerOzone.Monthly.Plot)
 
 ```
 
 14. To accompany your graph, summarize your results in context of the research question. Include output from the statistical test in parentheses at the end of your sentence. Feel free to use multiple sentences in your interpretation.
 
-> Answer: 
+> Answer: Based on the results in this graph, the year 2011 has the highest monthly mean ozone and the monthly mean ozone is at its lowest in late 2014. The decomposed plot also highlights the trends in the ozone concentration by illustrating a sharp decrease in ozone concentrations in late 2014 followed by an increase in 2015 and slight increases and decreases up until 2019 where the ozone concentration begins to sharply increase (Statistical test output: p-value =0.046724, Score = -77, Var(Score) =1499). Therefore, the p-value shows these results are statistically significant and the results satisfy the research question that the ozone concentrations change over time starting in the 2010.      
 
 15. Subtract the seasonal component from the `GaringerOzone.monthly.ts`. Hint: Look at how we extracted the series components for the EnoDischarge on the lesson Rmd file.
 
@@ -187,8 +212,26 @@ GaringerOzone.monthly <- Garinger.data.clean %>%
 ```{r}
 #15
 
+GaringerOzone.nonseasonal.monthly.ts <- as.data.frame(Garinger.monthly.decomposed$time.series[,1:3])
+
+GaringerOzone.nonseasonal.monthly.ts <- mutate(GaringerOzone.nonseasonal.monthly.ts,
+        Observed = GaringerOzone.monthly$MeanOzone,     
+        Date = GaringerOzone.monthly$Month_Year)
+
+GaringerOzone.nonseasonal.monthly.ts <- 
+       mutate (GaringerOzone.nonseasonal.monthly.ts,
+               Observed.Minus.Seasonal = GaringerOzone.nonseasonal.monthly.ts$Observed - GaringerOzone.nonseasonal.monthly.ts$seasonal) 
 #16
+
+GaringerOzone.nonseasonal.ts <- ts(GaringerOzone.nonseasonal.monthly.ts$Observed.Minus.Seasonal, start = c(2010,1), frequency = 12) #Do we select the observed column or another one? 
+
+
+GaringerOzone.monthly.nonseasonal.trend <- Kendall::MannKendall(GaringerOzone.nonseasonal.ts)
+
+GaringerOzone.monthly.nonseasonal.trend
+summary(GaringerOzone.monthly.nonseasonal.trend)
+
 
 ```
 
-> Answer: 
+> Answer: When comparing the nonseasonal data, we obtain a smaller p-value of 0.0075402 and a score of -1179. Therefore, this p-value is statistically significant and shows that seasonality plays a large role in the level of ozone concentrations over time. 
