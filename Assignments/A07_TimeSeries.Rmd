@@ -195,7 +195,10 @@ summary(GaringerOzone.monthly.trend.2)
 
 ```{r}
 # 13
-GaringerOzone.Monthly.Plot <- ggplot(GaringerOzone.monthly, aes(x=Month_Year, y=MeanOzone)) + geom_point() + geom_line() +geom_smooth(method = lm) +labs(y ="Mean Monthly Ozone", title = "Monthly Mean Ozone over Time", x = "Year") + scale_x_date(limits = as.Date(c("2010-01-01", "2019-12-31")), 
+GaringerOzone.Monthly.Plot <- ggplot(GaringerOzone.monthly, aes(x=Month_Year, y=MeanOzone)) + 
+  geom_point() + 
+  geom_line() +geom_smooth(method = lm) +labs(y ="Mean Monthly Ozone",x = "Year") + 
+  scale_x_date(limits = as.Date(c("2010-01-01", "2019-12-31")), 
     date_breaks = "1 year", date_labels = "%Y")
 print(GaringerOzone.Monthly.Plot)
 
@@ -219,11 +222,13 @@ GaringerOzone.nonseasonal.monthly.ts <- mutate(GaringerOzone.nonseasonal.monthly
         Date = GaringerOzone.monthly$Month_Year)
 
 GaringerOzone.nonseasonal.monthly.ts <- 
-       mutate (GaringerOzone.nonseasonal.monthly.ts,
-               Observed.Minus.Seasonal = GaringerOzone.nonseasonal.monthly.ts$Observed - GaringerOzone.nonseasonal.monthly.ts$seasonal) 
+  mutate (GaringerOzone.nonseasonal.monthly.ts,
+  Observed.Minus.Seasonal = 
+  GaringerOzone.nonseasonal.monthly.ts$Observed - GaringerOzone.nonseasonal.monthly.ts$seasonal) 
 #16
 
-GaringerOzone.nonseasonal.ts <- ts(GaringerOzone.nonseasonal.monthly.ts$Observed.Minus.Seasonal, start = c(2010,1), frequency = 12) #Do we select the observed column or another one? 
+GaringerOzone.nonseasonal.ts <- ts(GaringerOzone.nonseasonal.monthly.ts$Observed.Minus.Seasonal, 
+    start = c(2010,1), frequency = 12) 
 
 
 GaringerOzone.monthly.nonseasonal.trend <- Kendall::MannKendall(GaringerOzone.nonseasonal.ts)
