@@ -118,18 +118,21 @@ mapView(counties_sf, zcol = "AWATER")
 ```{r read HUCs shapefile}
 #Read the shapefile into an sf dataframe named "huc8_sf"
 
+huc8_sf<- st_read("./Data/Spatial/NCHUC8.shp")
 
 #Reveal the columns
-
+colnames(huc8_sf)
 
 #Check the CRS
+st_crs(huc8_sf)$epsg
 
+#4326
 
 #Examine some records
-
+head(huc8_sf)
 
 #View the data as a map, colored by the acreage in each
-
+mapView(huc8_sf, zcol = "ACRES")
 
 ```
 
@@ -140,9 +143,13 @@ mapView(counties_sf, zcol = "AWATER")
 ```{r Select the Upper Neuse HUC 8}
 #Read the shapefile into an sf dataframe
 
-
+upperNeuse_sf <- st_read("./Data/Spatial/NCHUC8.shp") %>%
+  filter(SUBBASIN == "Upper Neuse")
 
 #Create a map
+mapview(huc8_sf, col.regions = 'orange') + mapview(upperNeuse_sf, col.regions ='purple')
+ 
+ggplot() + geom_sf(data=huc8_sf, aes(fill=ACRES))       
 
 
 ```
@@ -215,7 +222,7 @@ str(svi2018_nc_raw)
 counties_sf_join <-  merge(x = counties_sf,
                            y = svi2018_nc_raw, 
                            by.x = "GEOID", 
-                           by.y = "FIPS" )
+                           by.y = "FIPS" ) #geometry is preserved as well
 
 #Tidyverse version of the join
 counties_sf_join <- counties_sf %>% 
@@ -239,17 +246,21 @@ ggplot() +
 
 ```{r}
 #Compute HUC8 wind energy
-
-
-
+wind.energy <-read.csv('https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Energy.csv',
+                       colClasses = c('HUC_12' = 'factor')) %>%
+  mutate(HUC_8 = substr(HUC_12,1,8)) %>%
+  group_by(HUC_8) %>%
+  summarise(kWhkm2day = sum(kWhkm2day))
 
 #Join to HUC_8 features
 
+huc8_sf_wind <- huc8_sf %>%
+  left_join(wind.energy, by = c('HUC_8','HUC_8'))
 
-
+#
 
 #View the outputs
-
+mapview(huc8_sf_wind, zcol = 'kWhkm2day')
 
 
 ```
@@ -275,16 +286,21 @@ mapview(state_sf)
 ```{r Aggregate the HUC data on an attribute, saving as huc2_sf}
 #List the unique values in the DWQ_Basin field
 
-
+unique(huc8_sf$DWQ_Basin)
 
 
 #Summarize on DWQ Basin value
 
-
+huc2_sf <-huc8_sf %>%
+  group_by(DWQ_Basin) %>%
+  summarise(ACRES=sum(ACRES),
+            SQ_MILE=sum(SQ_MILES)) 
 
 
   
 #Map the data
+mapview(huc2_sf)
+
 
 ```
 
@@ -364,18 +380,19 @@ mapview(neuse_counties_sf, zcol='Area_m2')
 
 ```{r EXERCISE: Clipping}
 #Select the Triangle County from the 
+the_triangle <-counties_sf_utm %>%
+  filter(NAME %in% c("Chatham", "Durham", "Orange", "Wake"))
 
-
-
-  
 #Grab the intersecting HUC_8s
+the_hucs <- huc8_sf_utm[the_triangle,]
 
-
+mapview(the_hucs) + mapview(the_triangle, alpha.regions = 0, color = 'red')
 
 #Intersect the HUC_8s
+the_huc_clip <- huc2_utm %>%
+  st_intersection(the_triangle)
 
-
-
+mapview(the_huc_clip) + mapview(the_triangle, alpha.regions = 0, color = 'red')
 
 ```
 
@@ -482,7 +499,7 @@ ggplot()  +
   geom_sf(data = state_sf_utm, color='red',size=2) + 
   scale_fill_gradient(low="yellow", high="darkgreen")
 
-#Right order
+#Right order for layers
 ggplot() +
   geom_sf(data = state_sf_utm, color='red',size=2) +
   geom_sf(data = counties_sf_utm, aes(fill = ALAND), color = 'white')  +
@@ -497,6 +514,8 @@ Leaflet is the most powerful of the three. However it requires getting all our d
 ### 4.2.1 Multiple layers in Leaflet
 
 ```{r transform.data.back.to.WSG84}
+
+library(leaflet)
 # Convert all to WGS84 (crs=4326)
 EPAair_wgs84 <- st_transform(epa_pm25_sites_sf, c=4326)
 counties_WGS84 <- st_transform(counties_sf_utm, c=4326)

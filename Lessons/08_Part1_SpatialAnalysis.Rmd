@@ -74,7 +74,7 @@ Let's read some geospatial data into our coding environment. The file we'll read
 
 ```{r Read in road data}
 #Read a spatial dataset
-GasPlants <- st_read('https://opendata.arcgis.com/datasets/a0722062315143a7980cebb79a204781_4.geojson')
+GasPlants <- st_read('https://opendata.arcgis.com/datasets/a0722062315143a7980cebb79a204781_4.geojson') #download dataset from a website 
 #Alternative
 #GasPlants <- st_read('./Data/Spatial/Manufactured_Gas_Plant_Sites.geojson')
 
@@ -116,7 +116,7 @@ EPAair.sites <- EPAair %>%
 #Convert to a spatial dataframe
 EPAair.sf <- EPAair.sites %>% 
   st_as_sf(coords = c('SITE_LONGITUDE','SITE_LATITUDE'),
-           crs=4326)
+           crs=4326) #longitude is x, latitude is y -> lat and long are in one column 
 
 #View the data using the methods above...
 
@@ -156,7 +156,7 @@ Let's explore:
 "Buffering" a simple feature extends the area outward a specified distance. The code below buffers Grainger Hall 1 "unit". 
 ```{r buffer Grainger hall}
 #Buffer Grainger Hall 1 unit
-the_buffer <- sf_GraingerHall %>% st_buffer(1)
+the_buffer <- sf_GraingerHall %>% st_buffer(1) #1 degree of lat or long
 
 #View the result
 mapview(the_buffer)
