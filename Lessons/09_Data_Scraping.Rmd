@@ -81,7 +81,7 @@ Now we want to scrape some data shown in the page into our R coding environment.
 * The facility type: "Industrial"
 * And the average water withdrawals for each month: "0.584. 0.647, 0.543, etc."
 
-To do this we first need to install a tool on our web browser to be able to call the web text we need. The tool is called a Selector Gadget, which for Chrome can be found [here](https://chrome.google.com/webstore/detail/selectorgadget/mhjhnkcfbdhnjickkkdbjoemdmbfginb?hl=en). 
+To do this we first need to install a tool on our web browser to be able to call the web text we need. The tool is called a Selector Gadget, which for Chrome can be found [here](l.https://chrome.google.com/webstore/detail/selectorgadget/mhjhnkcfbdhnjickkkdbjoemdmbfginb?hl=en). 
 
 The selector gadget tool is useful in identifying the internal ids of the elements shown in the web page that we want to extract. Using it is a bit clumsy, often requiring a bit of mucking about, but it still makes our work a lot easier. We'll begin by using it to determine the id of the box containing the registrant of our our site. 
 1. Activate the Selector Gadget tool.
@@ -169,8 +169,8 @@ This begins by setting the parameters of the page we'll be scraping to variables
 ```{r streamline.the.process}
 #Construct the scraping web address, i.e. its URL
 the_base_url <- 'https://www.ncwater.org/WUDC/app/WWATR/report/view'
-the_facility <- '0004-0001'
-the_year <- 2015
+the_facility <- '0218-0238'
+the_year <- 2020
 the_scrape_url <- paste0(the_base_url, '/', the_facility, '/', the_year)
 print(the_scrape_url)
 
@@ -263,7 +263,7 @@ view(the_df)
 R can iterate using either "lapply" or Purrrs' "map" functions. 
 ```{r scrape.multiple.years.of.data}
 #Set the inputs to scrape years 2015 to 2020 for the site "0004-0001"
-the_years = rep(2018:2020)
+the_years = rep(2018:2020) #runs scraping function 3 times 
 my_facility = '0004-0001'
 
 #Use lapply to apply the scrape function
@@ -306,7 +306,7 @@ the_main_website <- read_html(the_main_url)
 
 #Then extract all the nodes associated with this and rather than extracting them 
 the_facility_ids <- the_main_website %>% 
-  html_nodes('#content a') %>%    #Extract a list of html nodes taged with "content a"
+  html_nodes('#content a') %>%  #Extract a list of html nodes taged with "content a"
   html_attr("href") %>%           #Pull the "href" attribute from the node
   str_split("/") %>%              #Split the html address into substrings, separated by "/"
   map_chr(.,9)                    #Extract the 9th item in the above, which is the facility ID
@@ -338,7 +338,7 @@ df_2020 <- bind_rows(dfs_2020)
 
 
 #Plot
-ggplot(df_2020,aes(y = Avg_Withdrawals_mgd, x=Facility_type)) +
+ggplot(df_2020,aes(y = Avg_Withdrawals_mgd, x=as.factor(Month))) +
   geom_boxplot()
 
 ```
