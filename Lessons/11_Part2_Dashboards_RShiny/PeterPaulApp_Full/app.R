@@ -2,16 +2,17 @@
 library(shiny)
 library(shinythemes)
 library(tidyverse)
+library(bslib)
 
 #### Load data ----
-nutrient_data <- read_csv("Data/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
+nutrient_data <- read_csv("./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
 nutrient_data$sampledate <- as.Date(nutrient_data$sampledate, format = "%Y-%m-%d")
 nutrient_data <- nutrient_data %>%
   filter(depth_id > 0) %>%
   select(lakename, sampledate:po4)
 
 #### Define UI ----
-ui <- fluidPage(theme = shinytheme("yeti"),
+ui <- fluidPage(theme = bs_theme(version=4, bootswatch = "cerulean"),
   titlePanel("Nutrients in Peter Lake and Paul Lake"),
   sidebarLayout(
     sidebarPanel(
@@ -63,12 +64,11 @@ server <- function(input, output) {
         ggplot(filtered_nutrient_data(), 
                aes_string(x = "sampledate", y = input$y, 
                           fill = "depth_id", shape = "lakename")) +
-          geom_point(alpha = 0.8, size = 2) +
-          theme_classic(base_size = 14) +
+          geom_point(alpha = 0.7, size = 3) +
+          theme_classic(base_size = 12) +
           scale_shape_manual(values = c(21, 24)) +
           labs(x = "Date", y = expression(Concentration ~ (mu*g / L)), shape = "Lake", fill = "Depth ID") +
-          scale_fill_distiller(palette = "YlOrBr", guide = "colorbar", direction = 1)
-          #scale_fill_viridis_c(option = "viridis", begin = 0, end = 0.8, direction = -1)
+          scale_fill_viridis_c(option = "plasma", begin = 0, end = 0.8, direction = -1)
       })
        
     # Create a table that generates data for each point selected on the graph  
@@ -84,8 +84,10 @@ shinyApp(ui = ui, server = server)
 
 #### Questions for coding challenge ----
 #1. Play with changing the options on the sidebar. 
-    # Choose a shinytheme that you like. The default here is "yeti"
+    # Choose a shinytheme that you like. The default here is "yeti" 
+#Theme has been adjusted to cerulean
     # How do you change the default settings? 
+#Adjust themes in ui section 
     # How does each type of widget differ in its code and how it references the dataframe?
 #2. How is the mainPanel component of the UI structured? 
     # How does the output appear based on this code?
@@ -94,6 +96,7 @@ shinyApp(ui = ui, server = server)
     # How does this relate to selecting rows vs. columns from the original data frame?
 #4. Analyze the similarities and differences between ggplot code for a rendered vs. static plot.
     # Why are the aesthetics for x, y, fill, and shape formatted the way they are?
+#Formatting allows you to easily differentiate between the two for the dashboard
     # Note: the data frame has a "()" after it. This is necessary for reactive formatting.
     # Adjust the aesthetics, playing with different shapes, colors, fills, sizes, transparencies, etc.
 #5. Analyze the code used for the renderTable function. 
